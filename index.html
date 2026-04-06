@@ -49,16 +49,13 @@ const bookings = [
 
 // Prüft, ob ein Datum belegt ist
 function isBooked(date) {
+  // Tag als String "YYYY-MM-DD"
+  const dayStr = date.getFullYear() + '-' +
+                 String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                 String(date.getDate()).padStart(2, '0');
+
   return bookings.some(b => {
-    const start = new Date(b.start);
-    const end = new Date(b.end);
-
-    // Nur Jahr/Monat/Tag vergleichen, keine Uhrzeit
-    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-    const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-
-    return d >= s && d <= e;
+    return dayStr >= b.start && dayStr <= b.end;
   });
 }
 
