@@ -1,18 +1,82 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Belegungskalender</title>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    .calendar { width: 320px; margin: auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; }
-    .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
-    .day { border: 1px solid #ccc; padding: 5px; text-align: center; font-size: 12px; }
-    .frei { background-color: #c8f7c5; }
-    .belegt { background-color: #f7c5c5; }
-    button { padding: 5px 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>Belegungskalender</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+}
+
+.calendar {
+  width: 360px;
+  margin: 30px auto;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.day {
+  padding: 6px;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.frei { background-color: #d4edda; }
+.belegt { background-color: #f8d7da; }
+.today { border: 2px solid #007bff; }
+
+.legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: none;
+}
+
+.popup button {
+  margin-top: 10px;
+}
+</style>
+
 </head>
 <body>
 
@@ -22,168 +86,138 @@
     <h3 id="monthYear"></h3>
     <button onclick="nextMonth()">▶</button>
   </div>
+
   <div class="grid" id="calendarGrid"></div>
+
+  <div class="legend">
+    <div>🟢 Frei</div>
+    <div>🔴 Belegt</div>
+  </div>
+</div>
+
+<div class="popup" id="popup">
+  <div id="popupText"></div>
+  <button onclick="closePopup()">Schließen</button>
 </div>
 
 <script>
-  const data = {
-    const data = {
-  // JANUAR (65€)
-  "2026-01-01": { status: "frei", price: 65 },
-  "2026-01-02": { status: "frei", price: 65 },
-  "2026-01-03": { status: "frei", price: 65 },
-  "2026-01-04": { status: "frei", price: 65 },
-  "2026-01-05": { status: "frei", price: 65 },
-  "2026-01-06": { status: "frei", price: 65 },
-  "2026-01-07": { status: "frei", price: 65 },
-  "2026-01-08": { status: "frei", price: 65 },
-  "2026-01-09": { status: "frei", price: 65 },
-  "2026-01-10": { status: "frei", price: 65 },
-  "2026-01-11": { status: "frei", price: 65 },
-  "2026-01-12": { status: "frei", price: 65 },
-  "2026-01-13": { status: "frei", price: 65 },
-  "2026-01-14": { status: "frei", price: 65 },
-  "2026-01-15": { status: "frei", price: 65 },
-  "2026-01-16": { status: "frei", price: 65 },
-  "2026-01-17": { status: "frei", price: 65 },
-  "2026-01-18": { status: "frei", price: 65 },
-  "2026-01-19": { status: "frei", price: 65 },
-  "2026-01-20": { status: "frei", price: 65 },
-  "2026-01-21": { status: "frei", price: 65 },
-  "2026-01-22": { status: "frei", price: 65 },
-  "2026-01-23": { status: "frei", price: 65 },
-  "2026-01-24": { status: "frei", price: 65 },
-  "2026-01-25": { status: "frei", price: 65 },
-  "2026-01-26": { status: "frei", price: 65 },
-  "2026-01-27": { status: "frei", price: 65 },
-  "2026-01-28": { status: "frei", price: 65 },
-  "2026-01-29": { status: "frei", price: 65 },
-  "2026-01-30": { status: "frei", price: 65 },
-  "2026-01-31": { status: "frei", price: 65 },
 
-  // FEBRUAR (70€)
-  "2026-02-01": { status: "frei", price: 70 },
-  "2026-02-02": { status: "frei", price: 70 },
-  "2026-02-03": { status: "frei", price: 70 },
-  "2026-02-04": { status: "frei", price: 70 },
-  "2026-02-05": { status: "frei", price: 70 },
-  "2026-02-06": { status: "frei", price: 70 },
-  "2026-02-07": { status: "frei", price: 70 },
-  "2026-02-08": { status: "frei", price: 70 },
-  "2026-02-09": { status: "frei", price: 70 },
-  "2026-02-10": { status: "frei", price: 70 },
-  "2026-02-11": { status: "frei", price: 70 },
-  "2026-02-12": { status: "frei", price: 70 },
-  "2026-02-13": { status: "frei", price: 70 },
-  "2026-02-14": { status: "frei", price: 70 },
-  "2026-02-15": { status: "frei", price: 70 },
-  "2026-02-16": { status: "frei", price: 70 },
-  "2026-02-17": { status: "frei", price: 70 },
-  "2026-02-18": { status: "frei", price: 70 },
-  "2026-02-19": { status: "frei", price: 70 },
-  "2026-02-20": { status: "frei", price: 70 },
-  "2026-02-21": { status: "frei", price: 70 },
-  "2026-02-22": { status: "frei", price: 70 },
-  "2026-02-23": { status: "frei", price: 70 },
-  "2026-02-24": { status: "frei", price: 70 },
-  "2026-02-25": { status: "frei", price: 70 },
-  "2026-02-26": { status: "frei", price: 70 },
-  "2026-02-27": { status: "frei", price: 70 },
-  "2026-02-28": { status: "frei", price: 70 },
+// PREISLOGIK
+function getBasePrice(month) {
+  if (month === 0 || month === 11) return 65;
+  if (month === 1) return 70;
+  if (month === 2) return 80;
+  if (month === 3) return 90;
+  if (month === 4) return 105;
+  if (month === 5) return 120;
+  if (month === 6 || month === 7) return 130;
+  if (month === 8) return 110;
+  if (month === 9) return 90;
+  if (month === 10) return 75;
+}
 
-  // MÄRZ (80€)
-  "2026-03-01": { status: "frei", price: 80 },
-  // ... (gekürzt für Übersicht – restliche Tage alle 80€)
+function getFinalPrice(date) {
+  let price = getBasePrice(date.getMonth());
+  const day = date.getDay();
 
-  // APRIL (90€)
-  "2026-04-01": { status: "frei", price: 90 },
+  if (day === 5 || day === 6) {
+    price += 10;
+  }
 
-  // MAI (105€)
-  "2026-05-01": { status: "frei", price: 105 },
+  return price;
+}
 
-  // JUNI (120€)
-  "2026-06-01": { status: "frei", price: 120 },
+// MEHRERE BELEGUNGSZEITRÄUME
+const bookings = [
+  { start: "2026-09-01", end: "2026-09-09" }
+];
 
-  // JULI (130€)
-  "2026-07-01": { status: "frei", price: 130 },
+function isBooked(date) {
+  return bookings.some(b => {
+    return date >= new Date(b.start) && date <= new Date(b.end);
+  });
+}
 
-  // AUGUST (130€)
-  "2026-08-01": { status: "frei", price: 130 },
+let currentDate = new Date(2026, 0);
 
-  // SEPTEMBER (fallend + Belegung)
-  "2026-09-01": { status: "belegt" },
-  "2026-09-02": { status: "belegt" },
-  "2026-09-03": { status: "belegt" },
-  "2026-09-04": { status: "belegt" },
-  "2026-09-05": { status: "belegt" },
-  "2026-09-06": { status: "belegt" },
-  "2026-09-07": { status: "belegt" },
-  "2026-09-08": { status: "belegt" },
-  "2026-09-09": { status: "belegt" },
-  "2026-09-10": { status: "frei", price: 110 },
+function renderCalendar() {
+  const grid = document.getElementById("calendarGrid");
+  const monthYear = document.getElementById("monthYear");
 
-  // OKTOBER (90€)
-  "2026-10-01": { status: "frei", price: 90 },
+  grid.innerHTML = "";
 
-  // NOVEMBER (75€)
-  "2026-11-01": { status: "frei", price: 75 },
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-  // DEZEMBER (65€)
-  "2026-12-01": { status: "frei", price: 65 }
-};
-  };
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  let currentDate = new Date();
+  monthYear.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
 
-  function renderCalendar() {
-    const grid = document.getElementById("calendarGrid");
-    const monthYear = document.getElementById("monthYear");
-    grid.innerHTML = "";
+  const today = new Date();
 
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+  for (let i = 0; i < firstDay; i++) {
+    grid.innerHTML += "<div></div>";
+  }
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
 
-    monthYear.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
+    let className = "day";
+    let text = day;
 
-    for (let i = 0; i < firstDay; i++) {
-      grid.innerHTML += "<div></div>";
+    if (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    ) {
+      className += " today";
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      const entry = data[dateStr];
-
-      let className = "day";
-      let text = day;
-
-      if (entry) {
-        if (entry.status === "frei") {
-          className += " frei";
-          text += `<br>${entry.price}€`;
-        } else {
-          className += " belegt";
-          text += "<br>Belegt";
-        }
-      }
-
-      grid.innerHTML += `<div class="${className}">${text}</div>`;
+    if (isBooked(date)) {
+      className += " belegt";
+      text += "<br>Belegt";
+    } else {
+      const price = getFinalPrice(date);
+      className += " frei";
+      text += `<br>${price}€`;
     }
+
+    grid.innerHTML += `<div class="${className}" onclick="showDetails('${date.toISOString()}')">${text}</div>`;
+  }
+}
+
+function showDetails(dateStr) {
+  const date = new Date(dateStr);
+  const popup = document.getElementById("popup");
+  const text = document.getElementById("popupText");
+
+  if (isBooked(date)) {
+    text.innerHTML = `Datum: ${date.toLocaleDateString('de-DE')}<br>Status: Belegt`;
+  } else {
+    const price = getFinalPrice(date);
+    text.innerHTML = `Datum: ${date.toLocaleDateString('de-DE')}<br>Preis: ${price}€`;
   }
 
-  function prevMonth() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar();
-  }
+  popup.style.display = "block";
+}
 
-  function nextMonth() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar();
-  }
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
 
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
   renderCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+}
+
+renderCalendar();
+
 </script>
 
 </body>
