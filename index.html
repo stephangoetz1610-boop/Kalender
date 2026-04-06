@@ -5,10 +5,7 @@
 <title>Belegungskalender</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #f5f5f5;
-}
+body { font-family: Arial; background: #f5f5f5; }
 
 .calendar {
   width: 360px;
@@ -49,35 +46,12 @@ body {
   cursor: pointer;
 }
 
-.frei { background-color: #d4edda; }
-.belegt { background-color: #f8d7da; }
-.today { border: 2px solid #007bff; }
+.frei { background: #d4edda; }
+.belegt { background: #f8d7da; }
 
-.legend {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
-  font-size: 12px;
-}
-
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  display: none;
-}
-
-.popup button {
-  margin-top: 10px;
-}
 </style>
-
 </head>
+
 <body>
 
 <div class="calendar">
@@ -88,22 +62,11 @@ body {
   </div>
 
   <div class="grid" id="calendarGrid"></div>
-
-  <div class="legend">
-    <div>🟢 Frei</div>
-    <div>🔴 Belegt</div>
-  </div>
-</div>
-
-<div class="popup" id="popup">
-  <div id="popupText"></div>
-  <button onclick="closePopup()">Schließen</button>
 </div>
 
 <script>
 
-// PREISLOGIK
-function getBasePrice(month) {
+function getPrice(month) {
   if (month === 0 || month === 11) return 65;
   if (month === 1) return 70;
   if (month === 2) return 80;
@@ -116,94 +79,48 @@ function getBasePrice(month) {
   if (month === 10) return 75;
 }
 
-function getFinalPrice(date) {
-  let price = getBasePrice(date.getMonth());
-  const day = date.getDay();
-
-  if (day === 5 || day === 6) {
-    price += 10;
-  }
-
-  return price;
-}
-
-// MEHRERE BELEGUNGSZEITRÄUME
-const bookings = [
-  { start: "2026-09-01", end: "2026-09-09" }
-];
-
 function isBooked(date) {
-  return bookings.some(b => {
-    return date >= new Date(b.start) && date <= new Date(b.end);
-  });
+  const start = new Date(2026, 8, 1); // September
+  const end = new Date(2026, 8, 9);
+  return date >= start && date <= end;
 }
 
 let currentDate = new Date(2026, 0);
 
 function renderCalendar() {
   const grid = document.getElementById("calendarGrid");
-  const monthYear = document.getElementById("monthYear");
+  const title = document.getElementById("monthYear");
 
   grid.innerHTML = "";
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
+  title.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
+
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  monthYear.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
-
-  const today = new Date();
 
   for (let i = 0; i < firstDay; i++) {
     grid.innerHTML += "<div></div>";
   }
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
 
-    let className = "day";
-    let text = day;
-
-    if (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    ) {
-      className += " today";
-    }
+    let cls = "day";
+    let txt = d;
 
     if (isBooked(date)) {
-      className += " belegt";
-      text += "<br>Belegt";
+      cls += " belegt";
+      txt += "<br>Belegt";
     } else {
-      const price = getFinalPrice(date);
-      className += " frei";
-      text += `<br>${price}€`;
+      cls += " frei";
+      txt += "<br>" + getPrice(month) + "€";
     }
 
-    grid.innerHTML += `<div class="${className}" onclick="showDetails('${date.toISOString()}')">${text}</div>`;
+    grid.innerHTML += `<div class="${cls}">${txt}</div>`;
   }
-}
-
-function showDetails(dateStr) {
-  const date = new Date(dateStr);
-  const popup = document.getElementById("popup");
-  const text = document.getElementById("popupText");
-
-  if (isBooked(date)) {
-    text.innerHTML = `Datum: ${date.toLocaleDateString('de-DE')}<br>Status: Belegt`;
-  } else {
-    const price = getFinalPrice(date);
-    text.innerHTML = `Datum: ${date.toLocaleDateString('de-DE')}<br>Preis: ${price}€`;
-  }
-
-  popup.style.display = "block";
-}
-
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
 }
 
 function prevMonth() {
