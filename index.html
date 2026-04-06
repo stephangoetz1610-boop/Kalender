@@ -42,11 +42,11 @@ function getPrice(month) {
 
 // Prüft, ob Tag belegt ist
 function isBooked(day, month) {
-  if (month === 8 && day >= 1 && day <= 9) return true; // September 01-09
   if (month === 5 && day = 30) return true; // Juni 30
   if (month === 6 && day >= 1 && day <= 10) return true; // Juli 01-10
   if (month === 7 && day >= 1 && day <= 15) return true; // August 01-15
-  return false;
+  if (month === 8 && day >= 1 && day <= 9) return true; // September 01-09
+    return false;
 }
 
 let currentDate = new Date(2026, 0); // Start bei Januar 2026
