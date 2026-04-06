@@ -26,30 +26,38 @@ body { font-family: Arial; background: #f5f5f5; }
 </div>
 
 <script>
-// Preislogik nach Monat
+// Preise pro Monat
 function getPrice(month) {
   if (month === 0 || month === 11) return 65; // Jan, Dez
-  if (month === 1) return 70; // Feb
-  if (month === 2) return 80; // März
-  if (month === 3) return 90; // April
-  if (month === 4) return 105; // Mai
-  if (month === 5) return 120; // Juni
-  if (month === 6 || month === 7) return 130; // Juli, August
-  if (month === 8) return 110; // September
-  if (month === 9) return 90;  // Oktober
-  if (month === 10) return 75; // November
+  if (month === 1) return 70;
+  if (month === 2) return 80;
+  if (month === 3) return 90;
+  if (month === 4) return 105;
+  if (month === 5) return 120;
+  if (month === 6 || month === 7) return 130;
+  if (month === 8) return 110;
+  if (month === 9) return 90;
+  if (month === 10) return 75;
 }
 
-// Prüft, ob Tag belegt ist
-function isBooked(day, month) {
-  if (month === 5 && day === 30) return true; // Juni 30
-  if (month === 6 && day >= 1 && day <= 10) return true; // Juli 01-10
-  if (month === 7 && day >= 1 && day <= 15) return true; // August 01-15
-  if (month === 8 && day >= 1 && day <= 9) return true; // September 01-09
-    return false;
+// Array für belegte Zeiträume
+const bookings = [
+  { start: "2026-06-30", end: "2026-06-30" },   // Juni 30
+  { start: "2026-07-01", end: "2026-07-10" },   // Juli 01-10
+  { start: "2026-08-01", end: "2026-08-15" },   // August 01-15
+  { start: "2026-09-01", end: "2026-09-09" }    // September 01-09
+];
+
+// Prüft, ob ein Datum belegt ist
+function isBooked(date) {
+  return bookings.some(b => {
+    const start = new Date(b.start);
+    const end = new Date(b.end);
+    return date >= start && date <= end;
+  });
 }
 
-let currentDate = new Date(2026, 0); // Start bei Januar 2026
+let currentDate = new Date(2026, 0);
 
 function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
@@ -58,6 +66,7 @@ function renderCalendar() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -66,10 +75,11 @@ function renderCalendar() {
   for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
 
   for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
     let cls = 'day';
     let text = day;
 
-    if (isBooked(day, month)) {
+    if (isBooked(date)) {
       cls += ' belegt';
       text += '<br>Belegt';
     } else {
