@@ -2,56 +2,18 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Belegungskalender</title>
-
+<title>Belegungskalender 2026</title>
 <style>
 body { font-family: Arial; background: #f5f5f5; }
-
-.calendar {
-  width: 360px;
-  margin: 30px auto;
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.day {
-  padding: 6px;
-  text-align: center;
-  font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
+.calendar { width: 360px; margin: 30px auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.header { display: flex; justify-content: space-between; align-items: center; }
+.header button { background: #007bff; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+.day { padding: 6px; text-align: center; font-size: 12px; border-radius: 8px; }
 .frei { background: #d4edda; }
 .belegt { background: #f8d7da; }
-
 </style>
 </head>
-
 <body>
 
 <div class="calendar">
@@ -60,81 +22,66 @@ body { font-family: Arial; background: #f5f5f5; }
     <h3 id="monthYear"></h3>
     <button onclick="nextMonth()">▶</button>
   </div>
-
   <div class="grid" id="calendarGrid"></div>
 </div>
 
 <script>
-
+// Preislogik nach Monat
 function getPrice(month) {
-  if (month === 0 || month === 11) return 65;
-  if (month === 1) return 70;
-  if (month === 2) return 80;
-  if (month === 3) return 90;
-  if (month === 4) return 105;
-  if (month === 5) return 120;
-  if (month === 6 || month === 7) return 130;
-  if (month === 8) return 110;
-  if (month === 9) return 90;
-  if (month === 10) return 75;
+  if (month === 0 || month === 11) return 65; // Jan, Dez
+  if (month === 1) return 70; // Feb
+  if (month === 2) return 80; // März
+  if (month === 3) return 90; // April
+  if (month === 4) return 105; // Mai
+  if (month === 5) return 120; // Juni
+  if (month === 6 || month === 7) return 130; // Juli, August
+  if (month === 8) return 110; // September
+  if (month === 9) return 90;  // Oktober
+  if (month === 10) return 75; // November
 }
 
-function isBooked(date) {
-  const start = new Date(2026, 8, 1); // September
-  const end = new Date(2026, 8, 9);
-  return date >= start && date <= end;
+// Prüft, ob Tag belegt ist
+function isBooked(day, month) {
+  if (month === 8 && day >= 1 && day <= 9) return true; // September 01-09
+  return false;
 }
 
-let currentDate = new Date(2026, 0);
+let currentDate = new Date(2026, 0); // Start bei Januar 2026
 
 function renderCalendar() {
-  const grid = document.getElementById("calendarGrid");
-  const title = document.getElementById("monthYear");
-
-  grid.innerHTML = "";
+  const grid = document.getElementById('calendarGrid');
+  const monthYear = document.getElementById('monthYear');
+  grid.innerHTML = '';
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
-  title.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
-
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  for (let i = 0; i < firstDay; i++) {
-    grid.innerHTML += "<div></div>";
-  }
+  monthYear.innerText = currentDate.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d);
+  for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
 
-    let cls = "day";
-    let txt = d;
+  for (let day = 1; day <= daysInMonth; day++) {
+    let cls = 'day';
+    let text = day;
 
-    if (isBooked(date)) {
-      cls += " belegt";
-      txt += "<br>Belegt";
+    if (isBooked(day, month)) {
+      cls += ' belegt';
+      text += '<br>Belegt';
     } else {
-      cls += " frei";
-      txt += "<br>" + getPrice(month) + "€";
+      cls += ' frei';
+      text += '<br>' + getPrice(month) + '€';
     }
 
-    grid.innerHTML += `<div class="${cls}">${txt}</div>`;
+    grid.innerHTML += `<div class="${cls}">${text}</div>`;
   }
 }
 
-function prevMonth() {
-  currentDate.setMonth(currentDate.getMonth() - 1);
-  renderCalendar();
-}
-
-function nextMonth() {
-  currentDate.setMonth(currentDate.getMonth() + 1);
-  renderCalendar();
-}
+function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
+function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
 
 renderCalendar();
-
 </script>
 
 </body>
