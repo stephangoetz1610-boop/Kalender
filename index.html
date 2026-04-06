@@ -53,7 +53,13 @@ function isBooked(date) {
   return bookings.some(b => {
     const start = new Date(b.start);
     const end = new Date(b.end);
-    return date >= start && date <= end;
+
+    // Nur Jahr/Monat/Tag vergleichen, keine Uhrzeit
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+    return d >= s && d <= e;
   });
 }
 
